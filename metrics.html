@@ -1,0 +1,85 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Topics Metrics</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 20px; }
+  table { border-collapse: collapse; width: 100%; margin-top: 16px; }
+  th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+  th { background: #fafafa; }
+  .row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+  button { padding:8px 10px; border-radius:10px; border:1px solid #ddd; background:#fff; cursor:pointer; }
+  pre { background:#fafafa; border:1px solid #eee; padding:12px; border-radius:8px; max-height:240px; overflow:auto; }
+</style>
+</head>
+<body>
+  <h1>Topics Metrics (Phase 2)</h1>
+  <div class="row">
+    <button id="refresh">Refresh</button>
+    <button id="clear">Clear Topic Log</button>
+  </div>
+  <div id="summary"></div>
+  <table id="tbl">
+    <thead><tr><th>#</th><th>Timestamp</th><th>Source</th><th>Topic Name</th><th>Taxonomy</th><th>Topic ID</th><th>Witnessed?</th></tr></thead>
+    <tbody></tbody>
+  </table>
+  <h3>Raw Log</h3>
+  <pre id="raw">—</pre>
+
+  <script type="module">
+    import { getTopicLog, clearTopicLog } from "./witness.js";
+    const tbody = document.querySelector("#tbl tbody");
+    const raw = document.getElementById("raw");
+    const summary = document.getElementById("summary");
+    const btnR = document.getElementById("refresh");
+    const btnC = document.getElementById("clear");
+
+    function summarize(entries) {
+      const counts = new Map();
+      let witnessedCount = 0, totalRows = 0;
+      entries.forEach((e) => {
+        (e.topics || []).forEach(t => {
+          totalRows++;
+          const key = t.name || "(unnamed)";
+          counts.set(key, (counts.get(key) || 0) + 1);
+          if (t.witnessed) witnessedCount++;
+        });
+      });
+      const top = [...counts.entries()].sort((a,b)=>b[1]-a[1]).slice(0,5).map(([k,v])=>`${k} (${v})`).join(", ");
+      summary.innerHTML = `<p><b>Total topic rows:</b> ${totalRows} | <b>Witnessed rows:</b> ${witnessedCount}<br/><b>Top categories seen:</b> ${top || "—"}</p>`;
+    }
+
+    function render() {
+  let log = [];
+  try { log = getTopicLog() || []; } catch { log = []; }
+
+  const tbody = document.querySelector("#tbl tbody");
+  const raw = document.getElementById("raw");
+  const summary = document.getElementById("summary");
+
+  tbody.innerHTML = "";
+  let i = 1;
+  for (const entry of log) {
+    for (const t of (entry.topics||[])) {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td>${i++}</td><td>${entry.ts}</td><td>${entry.source}</td><td>${t.name||""}</td><td>${t.taxonomyVersion||""}</td><td>${t.topic??""}</td><td>${t.witnessed? "Yes":"No"}</td>`;
+      tbody.appendChild(tr);
+    }
+  }
+  raw.textContent = JSON.stringify(log, null, 2);
+
+  // summary even when empty
+  const totalRows = log.reduce((n,e)=>n+(e.topics?.length||0),0);
+  summary.innerHTML = `<p><b>Total topic rows:</b> ${totalRows} | <b>Witnessed rows:</b> ${
+    log.reduce((n,e)=>n+(e.topics||[]).filter(t=>t.witnessed).length,0)
+  }</p>`;
+}
+
+    btnR.addEventListener("click", render);
+    btnC.addEventListener("click", () => { clearTopicLog(); render(); });
+    render();
+  </script>
+</body>
+</html>
