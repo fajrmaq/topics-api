@@ -46,15 +46,15 @@ mkdir -p chrome-topics-profile
 #### For MacOS:
 ```bash
 /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome \
-  --enable-features=BrowsingTopics,BrowsingTopicsParameters:time_period_per_epoch/15s,max_epoch_introduction_delay/3s,PrivacySandboxAdsAPIsOverride,PrivacySandboxSettings3,OverridePrivacySandboxSettingsLocalTesting,BrowsingTopicsBypassIPIsPubliclyRoutableCheck,BrowsingTopicsBypassIPIsPubliclyRoutableCheck \
-  --privacy-sandbox-enrollment-overrides=https://cooking.test:8080,https://sports.test:8080,https://travel.test:8080,https://test.test:8080 \
+  --enable-features=BrowsingTopics,BrowsingTopicsParameters:time_period_per_epoch/60s,max_epoch_introduction_delay/3s,PrivacySandboxAdsAPIsOverride,PrivacySandboxSettings3,OverridePrivacySandboxSettingsLocalTesting,BrowsingTopicsBypassIPIsPubliclyRoutableCheck,BrowsingTopicsBypassIPIsPubliclyRoutableCheck \
+  --privacy-sandbox-enrollment-overrides=https://cooking.test:8080,https://sports.test:8080,https://travel.test:8080,https://tennis.test:8080 \
   --user-data-dir="chrome-topics-profile"
 ```
 #### For Ubuntu:
 ```bash
 google-chrome \
-  --enable-features=BrowsingTopics,BrowsingTopicsParameters:time_period_per_epoch/15s,max_epoch_introduction_delay/3s,PrivacySandboxAdsAPIsOverride,PrivacySandboxSettings3,OverridePrivacySandboxSettingsLocalTesting,BrowsingTopicsBypassIPIsPubliclyRoutableCheck,BrowsingTopicsBypassIPIsPubliclyRoutableCheck \
-  --privacy-sandbox-enrollment-overrides=https://cooking.test:8080,https://sports.test:8080,https://travel.test:8080,https://test.test:8080 \
+  --enable-features=BrowsingTopics,BrowsingTopicsParameters:time_period_per_epoch/60s,max_epoch_introduction_delay/3s,PrivacySandboxAdsAPIsOverride,PrivacySandboxSettings3,OverridePrivacySandboxSettingsLocalTesting,BrowsingTopicsBypassIPIsPubliclyRoutableCheck,BrowsingTopicsBypassIPIsPubliclyRoutableCheck \
+  --privacy-sandbox-enrollment-overrides=https://cooking.test:8080,https://sports.test:8080,https://travel.test:8080,https://tennis.test:8080 \
   --user-data-dir="chrome-topics-profile"
 ```
 

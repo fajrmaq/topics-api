@@ -58,14 +58,14 @@
           console.warn("Error calling Topics API:", err);
         }
       }
-      if (!Array.isArray(topics) || topics.length === 0) {
-        // MOCK fallback data to guarantee that there is a visible output
+      /*if (!Array.isArray(topics) || topics.length === 0) {
+         // MOCK fallback data to guarantee that there is a visible output
         topics = [
           { topic: 121, taxonomyVersion: "2", name: DATA_CATEGORY },
           { topic: 36, taxonomyVersion: "2", name: "Sports > Basketball" },
           { topic: 93, taxonomyVersion: "2", name: "Technology > Artificial Intelligence" }
         ];
-      }
+      }*/
       output.textContent = JSON.stringify({ from: "publisher", topics }, null, 2);
       adFrame.contentWindow?.postMessage({ type: "topicsData", payload: topics }, "*");
     });

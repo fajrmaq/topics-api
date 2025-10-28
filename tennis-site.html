@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <title>Publisher: Sports</title>
+  <title>Publisher: Tennis</title>
   <style>
     body { font-family: system-ui, sans-serif; margin: 20px; }
     .row { display:flex; gap:10px; align-items:center; margin-bottom:12px; flex-wrap:wrap; }
@@ -12,8 +12,8 @@
   </style>
 </head>
 <body>
-  <h1>Publisher: Sports</h1>
-  <p>This page declares the category “<b>Sports > Basketball</b>” and embeds the adtech iframe.</p>
+  <h1>Publisher: Tennis</h1>
+  <p>This page declares the category “<b>Sports > Tennis</b>” and embeds the adtech iframe.</p>
 
   <div class="row">
     <button id="getTopics">Get Topics (publisher)</button>
@@ -27,7 +27,7 @@
           style="border:1px solid #ccc; border-radius:8px; margin-top:10px;"></iframe>
 
   <script>
-    const DATA_CATEGORY = "Sports > Basketball";
+    const DATA_CATEGORY = "Sports > Tennis";
     const btn = document.getElementById("getTopics");
     const clearBtn = document.getElementById("clear");
     const output = document.getElementById("output");
@@ -39,7 +39,7 @@
     support.textContent = supported ? "document.browsingTopics() available" : "Not supported";
     support.style.background = supported ? "#d9f7be" : "#ffd6e7";
 
-    // Tell the iframe our declared category so it can record a “witness” (demo-only)
+    // tell the iframe our declared category so it can record a “witness” (demo-only)
     adFrame.addEventListener("load", () => {
       adFrame.contentWindow?.postMessage({ type: "declareCategory", payload: DATA_CATEGORY }, "*");
     });
