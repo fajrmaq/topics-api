@@ -1,0 +1,65 @@
+# topics-api
+
+### Give the localhost a Topics eligible name:
+#### Open up /etc/hosts
+```bash
+sudo nano /etc/hosts
+```
+#### Add the following line:
+```bash
+127.0.0.1  tennis.test
+127.0.0.1  cooking.test
+127.0.0.1  sports.test
+127.0.0.1  travel.test
+```
+
+### Install mkcert
+#### On Ubuntu
+```bash
+sudo apt install mkcert libnss3-tools
+```
+#### On MacOS
+```bash
+brew install mkcert
+```
+
+### Install the Root Certificate
+```bash
+mkcert -install
+```
+
+### Generate certificates for https connection
+```bash
+mkcert cooking.test sports.test travel.test tennis.test
+```
+
+### Run https_server
+```bash
+python3 https_server.py
+```
+
+### Final step: Run Chrome in development mode:
+#### Build a new profile:
+```bash
+mkdir -p chrome-topics-profile
+```
+#### For MacOS:
+```bash
+/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome \
+  --enable-features=BrowsingTopics,BrowsingTopicsParameters:time_period_per_epoch/15s,max_epoch_introduction_delay/3s,PrivacySandboxAdsAPIsOverride,PrivacySandboxSettings3,OverridePrivacySandboxSettingsLocalTesting,BrowsingTopicsBypassIPIsPubliclyRoutableCheck,BrowsingTopicsBypassIPIsPubliclyRoutableCheck \
+  --privacy-sandbox-enrollment-overrides=https://cooking.test:8080,https://sports.test:8080,https://travel.test:8080,https://test.test:8080 \
+  --user-data-dir="chrome-topics-profile"
+```
+#### For Ubuntu:
+```bash
+google-chrome \
+  --enable-features=BrowsingTopics,BrowsingTopicsParameters:time_period_per_epoch/15s,max_epoch_introduction_delay/3s,PrivacySandboxAdsAPIsOverride,PrivacySandboxSettings3,OverridePrivacySandboxSettingsLocalTesting,BrowsingTopicsBypassIPIsPubliclyRoutableCheck,BrowsingTopicsBypassIPIsPubliclyRoutableCheck \
+  --privacy-sandbox-enrollment-overrides=https://cooking.test:8080,https://sports.test:8080,https://travel.test:8080,https://test.test:8080 \
+  --user-data-dir="chrome-topics-profile"
+```
+
+### Demo:
+```bash
+chrome://flags/ # check
+chrome://topics-internals/
+```
