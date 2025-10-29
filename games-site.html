@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Publisher: Games</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 20px; }
+    .row { display:flex; gap:10px; align-items:center; margin-bottom:12px; flex-wrap:wrap; }
+    pre { background:#fafafa; border:1px solid #eee; padding:12px; border-radius:8px; max-height:240px; overflow:auto; }
+    .badge { padding:2px 8px; border-radius:999px; background:#eee; font-size:12px; }
+    button { padding:8px 10px; border-radius:10px; border:1px solid #ddd; background:#fff; cursor:pointer; }
+  </style>
+</head>
+<body>
+  <h1>Publisher: Games</h1>
+  <p>This page declares the category “<b>Games > Basketball</b>” and embeds the adtech iframe.</p>
+
+  <div class="row">
+    <button id="getTopics">Get Topics (publisher)</button>
+    <label><input type="checkbox" id="observe" checked> observe this visit</label>
+    <button id="clear">Clear Witness Log (iframe)</button>
+    <span id="support" class="badge">detecting…</span>
+  </div>
+  <pre id="output">—</pre>
+
+  <iframe id="adFrame" src="adtech-phase2.html" width="560" height="320" allow="browsing-topics"
+          style="border:1px solid #ccc; border-radius:8px; margin-top:10px;"></iframe>
+
+  <script>
+    const DATA_CATEGORY = "Games > Basketball";
+    const btn = document.getElementById("getTopics");
+    const clearBtn = document.getElementById("clear");
+    const output = document.getElementById("output");
+    const adFrame = document.getElementById("adFrame");
+    const observe = document.getElementById("observe");
+    const support = document.getElementById("support");
+
+    const supported = typeof document.browsingTopics === "function";
+    support.textContent = supported ? "document.browsingTopics() available" : "Not supported";
+    support.style.background = supported ? "#d9f7be" : "#ffd6e7";
+
+    // Tell the iframe our declared category so it can record a “witness” (demo-only)
+    adFrame.addEventListener("load", () => {
+      adFrame.contentWindow?.postMessage({ type: "declareCategory", payload: DATA_CATEGORY }, "*");
+    });
+
+    clearBtn.addEventListener("click", () => {
+      adFrame.contentWindow?.postMessage({ type: "clearWitnesses" }, "*");
+    });
+
+    btn.addEventListener("click", async () => {
+      output.textContent = "Querying…";
+      let topics = [];
+      if (supported) {
+        try {
+          topics = await document.browsingTopics({ skipObservation: !observe.checked });
+        } catch (err) {
+          console.warn("Error calling Topics API:", err);
+        }
+      }
+      /*if (!Array.isArray(topics) || topics.length === 0) {
+         // MOCK fallback data to guarantee that there is a visible output
+        topics = [
+          { topic: 121, taxonomyVersion: "2", name: DATA_CATEGORY },
+          { topic: 36, taxonomyVersion: "2", name: "Games > Basketball" },
+          { topic: 93, taxonomyVersion: "2", name: "Technology > Artificial Intelligence" }
+        ];
+      }*/
+      output.textContent = JSON.stringify({ from: "publisher", topics }, null, 2);
+      adFrame.contentWindow?.postMessage({ type: "topicsData", payload: topics }, "*");
+    });
+  </script>
+</body>
+</html>

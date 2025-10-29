@@ -8,12 +8,14 @@ handler = http.server.SimpleHTTPRequestHandler
 httpd = ThreadingHTTPServer(("0.0.0.0", PORT), handler)
 
 context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-context.load_cert_chain(certfile="cooking.test+3.pem", keyfile="cooking.test+3-key.pem")
+context.load_cert_chain(certfile="sports.test+5.pem", keyfile="sports.test+5-key.pem")
 httpd.socket = context.wrap_socket(httpd.socket, server_side=True)
 
 print(
     f"""
 Serving HTTPS on:
+  https://news.test:{PORT}/news-site.html
+  https://games.test:{PORT}/games-site.html
   https://sports.test:{PORT}/sports-site.html
   https://cooking.test:{PORT}/cooking-site.html
   https://travel.test:{PORT}/travel-site.html
