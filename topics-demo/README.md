@@ -1,4 +1,15 @@
 # topics-api
+### Summary
+* We used **HTTPS** because the **Topics API** only works in secure contexts.
+* We added **local domain names** like `sports.test` and `news.test` in `/etc/hosts`, all pointing to `127.0.0.1`.
+* We installed **mkcert** to create trusted **local HTTPS certificates** for those domains.
+* This makes Chrome treat our local sites as **secure HTTPS origins**.
+* We ran a **local HTTPS server** (`https_server.py`) to serve the demo sites.
+* We launched Chrome with **Privacy Sandbox and Topics API flags** enabled
+  * --privacy-sandbox-enrollment-overrides=https://sports.test:8080,...
+→ Tells Chrome to treat these local HTTPS sites as enrolled in the Topics API — just like real registered domains.
+* This setup allows us to **simulate multiple secure origins locally** and test how the Topics API behaves across different sites.
+  
 ### Give the localhost a Topics eligible name:
 #### Open up /etc/hosts
 ```bash
