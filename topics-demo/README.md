@@ -7,7 +7,7 @@
 * We ran a **local HTTPS server** (`https_server.py`) to serve the demo sites.
 * We launched Chrome with **Privacy Sandbox and Topics API flags** enabled
   * --privacy-sandbox-enrollment-overrides=https://sports.test:8080,...
-→ Tells Chrome to treat these local HTTPS sites as enrolled in the Topics API — just like real registered domains.
+→ Tells Chrome to treat these local HTTPS sites as enrolled in the Topics API—just like real registered domains.
 * This setup allows us to **simulate multiple secure origins locally** and test how the Topics API behaves across different sites.
   
 ### Give the localhost a Topics eligible name:
