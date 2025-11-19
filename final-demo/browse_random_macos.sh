@@ -11,7 +11,7 @@ ROOT="$(cd "$(dirname "$0")" && pwd)"
 SITES_DIR="$ROOT/sites"
 PROFILE_DIR="$ROOT/chrome-topics-profile-mac"
 PORT=${PORT:-8080}
-DWELL=${DWELL:-60}
+DWELL=${DWELL:-4}
 RD_PORT=${RD_PORT:-9222}
 
 if [ ! -d "$SITES_DIR" ]; then
