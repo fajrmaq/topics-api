@@ -1,3 +1,4 @@
 *.pem
 chrome-topics-profile*
 __pycache__
+*.DS_Store
