@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Ad Tech Frame (local)</title>
+    <meta http-equiv="Permissions-Policy" content="browsing-topics=*">
+    <style>
+        body { font-family: system-ui, sans-serif; background: #fafafa; padding: 12px; }
+        pre { background: #fff; padding: 12px; border-radius: 8px; border: 1px solid #eee; max-height: 240px; overflow:auto;}
+        .row { display:flex; gap:10px; align-items:center; margin-bottom:10px; flex-wrap: wrap;}
+        .pill { padding:2px 8px; border-radius:999px; background:#efefef; font-size:12px; }
+        button { padding:8px 10px; border-radius:10px; border:1px solid #ddd; background:#fff; cursor:pointer; }
+        button:disabled { opacity:.6; cursor:not-allowed; }
+    </style>
+</head>
+<body>
+    <h2>Ad Tech Frame (local)</h2>
+    <div class="row">
+        <span id="support" class="pill">detecting…</span>
+        <label><input id="observe" type="checkbox" checked> observe (skipObservation = false)</label>
+        <button id="callSelf" disabled>Call Topics (iframe)</button>
+        <button id="clearWitness">Clear Witness Log</button>
+        <button id="clearLog">Clear Topics Log</button>
+    </div>
+    <pre id="output">—</pre>
+
+    <script type="module">
+        import { getWitnesses, clearWitnesses, logTopics, getTopicLog, clearTopicLog } from "./witness.js";
+
+        const output = document.getElementById("output");
+        const callSelf = document.getElementById("callSelf");
+        const observe = document.getElementById("observe");
+        const support = document.getElementById("support");
+        const btnClearW = document.getElementById("clearWitness");
+        const btnClearL = document.getElementById("clearLog");
+
+        const supported = typeof document.browsingTopics === "function";
+        support.textContent = supported ? "document.browsingTopics() available" : "Not supported in iframe";
+        support.style.background = supported ? "#d9f7be" : "#ffd6e7";
+        callSelf.disabled = !supported;
+
+        function normalize(topics) {
+            return (Array.isArray(topics) ? topics : []).map(t => ({
+                topic: t.topic ?? null,
+                name: t.name || t.topicName || String(t),
+                taxonomyVersion: t.taxonomyVersion ?? null
+            }));
+        }
+
+        function render(from, topics) {
+            const witnesses = getWitnesses();
+            const normalized = normalize(topics).map(t => ({
+                ...t,
+                witnessed: witnesses.has(t.name)
+            }));
+            logTopics(from, normalized);
+            const history = getTopicLog();
+            output.textContent = JSON.stringify({
+                latest: { from, topics: normalized },
+                witnessed: [...witnesses],
+                historyCount: history.length
+            }, null, 2);
+        }
+
+        window.addEventListener("message", (event) => {
+            if (!event?.data) return;
+                if (event.data.type === "topicsData") {
+                    render("publisher -> adtech", event.data.payload);
+                    try {
+                        fetch('/__adtech_witness', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ origin: location.hostname, topics: event.data.payload || [] })
+                        }).catch(()=>{});
+                    } catch (e) {}
+                }
+                if (event.data.type === "topicsResponse") {
+                    try {
+                        const payload = event.data.payload || {};
+                        const topics = payload.topics || payload || [];
+                        render("publisher -> adtech", topics);
+                        try {
+                            fetch('/__adtech_witness', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ origin: payload.origin || location.hostname, topics: topics })
+                            }).catch(()=>{});
+                        } catch (e) {}
+                    } catch (e) {}
+                }
+            if (event.data.type === "declareCategory") {
+                try {
+                    const cat = event.data.payload;
+                    const set = new Set(JSON.parse(localStorage.getItem("adtech_witnessed_topics") || "[]"));
+                    set.add(cat);
+                    localStorage.setItem("adtech_witnessed_topics", JSON.stringify([...set]));
+                } catch {};
+            }
+            if (event.data.type === "clearWitnesses") {
+                clearWitnesses();
+                output.textContent = "Witness log cleared.";
+            }
+        });
+
+        async function getTopicsSelf() {
+            output.textContent = "Iframe querying…";
+            try {
+                const topics = await document.browsingTopics({ skipObservation: !observe.checked });
+                render("adtech iframe", topics);
+            } catch (err) {
+                output.textContent = "Iframe Error: " + err.message;
+            }
+        }
+        callSelf.addEventListener("click", getTopicsSelf);
+
+        btnClearW.addEventListener("click", () => {
+            clearWitnesses();
+            output.textContent = "Witness log cleared.";
+        });
+        btnClearL.addEventListener("click", () => {
+            clearTopicLog();
+            output.textContent = "Topics log cleared.";
+        });
+
+        if (supported) getTopicsSelf();
+    </script>
+</body>
+</html>

@@ -1,2 +1,3 @@
 *.pem
-chrome-topics-profile
+chrome-topics-profile*
+__pycache__
