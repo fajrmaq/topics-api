@@ -55,7 +55,7 @@ PORT=8080 python3 https_server.py
 ./browse_random_macos.sh
 ```
 
-Environment variables: `PORT` (matches server/generation port, default `8080`) and `DWELL` (seconds to keep Chrome open, default `30`). The scripts create `chrome-topics-profile-*` directories, enable the Privacy Sandbox flags, and do not require `/etc/hosts`.
+Environment variables: `PORT` (matches server/generation port, default `8080`) and `DWELL` (seconds to keep Chrome open, default `4`). The scripts create `chrome-topics-profile-*` directories, enable the Privacy Sandbox flags, and do not require `/etc/hosts`.
 
 ## Cleanup
 ```bash
