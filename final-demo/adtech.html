@@ -47,45 +47,46 @@
             }));
         }
 
+        function postWitness(origin, topics) {
+            if (!Array.isArray(topics) || topics.length === 0) return;
+            try {
+                fetch('/__adtech_witness', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ origin, topics })
+                }).catch(()=>{});
+            } catch (e) {}
+        }
+
         function render(from, topics) {
             const witnesses = getWitnesses();
-            const normalized = normalize(topics).map(t => ({
+            const normalized = normalize(topics);
+            const annotated = normalized.map(t => ({
                 ...t,
                 witnessed: witnesses.has(t.name)
             }));
-            logTopics(from, normalized);
+            logTopics(from, annotated);
             const history = getTopicLog();
             output.textContent = JSON.stringify({
-                latest: { from, topics: normalized },
+                latest: { from, topics: annotated },
                 witnessed: [...witnesses],
                 historyCount: history.length
             }, null, 2);
+            return normalized;
         }
 
         window.addEventListener("message", (event) => {
             if (!event?.data) return;
                 if (event.data.type === "topicsData") {
-                    render("publisher -> adtech", event.data.payload);
-                    try {
-                        fetch('/__adtech_witness', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ origin: location.hostname, topics: event.data.payload || [] })
-                        }).catch(()=>{});
-                    } catch (e) {}
+                    const normalized = render("publisher -> adtech", event.data.payload);
+                    postWitness(location.hostname, normalized);
                 }
                 if (event.data.type === "topicsResponse") {
                     try {
                         const payload = event.data.payload || {};
                         const topics = payload.topics || payload || [];
-                        render("publisher -> adtech", topics);
-                        try {
-                            fetch('/__adtech_witness', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ origin: payload.origin || location.hostname, topics: topics })
-                            }).catch(()=>{});
-                        } catch (e) {}
+                        const normalized = render("publisher -> adtech", topics);
+                        postWitness(payload.origin || location.hostname, normalized);
                     } catch (e) {}
                 }
             if (event.data.type === "declareCategory") {
@@ -106,7 +107,8 @@
             output.textContent = "Iframe querying…";
             try {
                 const topics = await document.browsingTopics({ skipObservation: !observe.checked });
-                render("adtech iframe", topics);
+                const normalized = render("adtech iframe", topics);
+                postWitness(location.hostname, normalized);
             } catch (err) {
                 output.textContent = "Iframe Error: " + err.message;
             }

@@ -72,7 +72,7 @@ done
 mkdir -p "$PROFILE_DIR"
 
 FLAGS=(
-  "--enable-features=BrowsingTopics,BrowsingTopicsParameters:time_period_per_epoch/60s,max_epoch_introduction_delay/3s,PrivacySandboxAdsAPIsOverride,PrivacySandboxSettings3,OverridePrivacySandboxSettingsLocalTesting,BrowsingTopicsBypassIPIsPubliclyRoutableCheck,BrowsingTopicsBypassIPIsPubliclyRoutableCheck"
+  "--enable-features=BrowsingTopics,BrowsingTopicsParameters:time_period_per_epoch/180s,max_epoch_introduction_delay/3s,PrivacySandboxAdsAPIsOverride,PrivacySandboxSettings3,OverridePrivacySandboxSettingsLocalTesting,BrowsingTopicsBypassIPIsPubliclyRoutableCheck,BrowsingTopicsBypassIPIsPubliclyRoutableCheck"
   "--privacy-sandbox-enrollment-overrides=$ENROLL"
   "--host-resolver-rules=$HRULES"
   "--user-data-dir=$PROFILE_DIR"
